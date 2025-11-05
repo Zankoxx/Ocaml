@@ -83,6 +83,17 @@ let rec affiche: prop -> string = function
     | Equ(p1,p2) -> "("^ affiche(p1) ^" ↔ "^ affiche(p2) ^")";;
 
 (* ===== Interprétation ===== *)
+let i1 = [("a",Un);("b",Zero);("c",Un)];;
+let i2 = [("a",Zero);("b",Zero);("c",Zero)];;
+let i3 = [("a",Un);("b",Un);("c",Un)];;
+
+let listeInterpretation = [
+  [("p",Zero);("q",Zero)];
+  [("p",Zero);("q",Un)];
+  [("p",Un);("q",Zero)];
+  [("p",Un);("q",Un)];
+];;
+
 let rec intSymb: string * interpretation -> valVerite = function
     (s,i) -> match (s,i) with
     | (s,[]) -> raise (Failure "Variable non interprétée")
@@ -127,18 +138,17 @@ let rec valeur: prop * interpretation -> valVerite = function
     | Equ(p1, p2) -> intEqu (valeur (p1, i), valeur (p2, i))
 ;;
 
+let modele : prop * interpretation -> bool = function
+  | (Top, _) -> true
+  | (Bot, _) -> false
+  | (Symb s, i) -> valeur (Symb s, i) = Un
+  | (Not p, i) -> valeur (Not p, i) = Un
+  | (And(p1, p2), i) -> valeur (And(p1, p2), i) = Un
+  | (Or(p1, p2), i) -> valeur (Or(p1, p2), i) = Un
+  | (Imp(p1, p2), i) -> valeur (Imp(p1, p2), i) = Un
+  | (Equ(p1, p2), i) -> valeur (Equ(p1, p2), i) = Un;;
 
-let i1 = [("a",Un);("b",Zero);("c",Un)];;
-let i2 = [("a",Zero);("b",Zero);("c",Zero)];;
-let i3 = [("a",Un);("b",Un);("c",Un)];;
-
-let listeInterpretation = [
-  [("p",Zero);("q",Zero)];
-  [("p",Zero);("q",Un)];
-  [("p",Un);("q",Zero)];
-  [("p",Un);("q",Un)];
-];;
-
+      
 let rec consTous: 'a * 'a list list -> 'a list list = function
     (e,idl) -> match idl with
     | [] -> []
@@ -152,6 +162,14 @@ let rec ensInt: string list -> (string * valVerite) list list = function
         @
         (consTous ((s, Un) , ensInt q));;
 
+let rec existeModele : prop * interpretation list -> bool = function (p,i) ->
+  match p,i with 
+  |(_,[]) -> false 
+  |(p,t::q) -> if modele(p,t) then true else existeModele(p,q);;
+
+let satisfiable : prop -> bool = function p -> match p with 
+  |(_,[]) -> false
+  |
 
             
         
