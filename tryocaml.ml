@@ -19,6 +19,18 @@ type prop =
 
 type interpretation = (string * valVerite) list;;
 
+let f1 = Or ( And ( And ( Equ ( Imp ( Symb "e2" ,
+                                      And ( Top , Symb "e1") ) ,
+                                And ( Bot , Not ( Symb "e1" ) ) ) ,
+                          Symb "e4" ),
+                    ( Not ( Symb "e3" ) ) ) ,
+              Imp ( Symb "e1" , Imp ( Symb "e1" , Symb "e2" ) ) ) ;;
+
+let f2 = Imp(Symb "p",Symb "p");;
+let f2bis = Or(Symb "p" ,Not(Symb "p"));;
+let f3 = And(Symb "p" ,Not(Symb "p"));;
+
+let f4 = And(Imp(Symb "p",Symb "p"),Imp(Symb "r",Symb "r"));;
 (* ===== Fonctions utilitaires sur les listes ===== *)
 let rec estPresent: (string * string list) -> bool = function
     (s,l) -> if l = [] then false
@@ -167,9 +179,53 @@ let rec existeModele : prop * interpretation list -> bool = function (p,i) ->
   |(_,[]) -> false 
   |(p,t::q) -> if modele(p,t) then true else existeModele(p,q);;
 
-let satisfiable : prop -> bool = function p -> match p with 
-  |(_,[]) -> false
-  |
+let rec tousModele : prop * interpretation list -> bool = function (p,i) ->
+  match p,i with 
+  |(p,t::q) -> if modele(p,t) then existeModele(p,q) else false
+  |(_,[]) -> true;;
+
+let rec memeModele : prop * prop * interpretation list -> bool = function (p1,p2,i) ->
+  match p1,p2,i with
+  |(p1,p2,t::q) -> if modele(p1,t) = modele(p2,t) then memeModele(p1, p2, q) else false 
+  |(_,_,[]) -> true;;
+
+let satisfiable : prop -> bool = function p ->
+  existeModele(p,(ensInt (sp p)));;
+
+let insatisfiable : prop -> bool = function p -> 
+  satisfiable p = false ;;
+
+let valide : prop -> bool = function p -> tousModele(p,(ensInt(sp p)));;
+
+let equivalent1 : prop * prop -> bool = function (p1,p2) -> 
+  memeModele(p1,p2, (ensInt ((sp p1)@(sp p2)))) ;;
+
+(* let equivalent2 flemme *)
+
+
+  
+  
+  
+  
+  
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+
+
+
+
+
+  
+          
 
             
         
