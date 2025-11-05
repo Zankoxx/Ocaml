@@ -200,7 +200,34 @@ let valide : prop -> bool = function p -> tousModele(p,(ensInt(sp p)));;
 let equivalent1 : prop * prop -> bool = function (p1,p2) -> 
   memeModele(p1,p2, (ensInt ((sp p1)@(sp p2)))) ;;
 
-(* let equivalent2 flemme *)
+let equivalent2 : prop * prop -> bool = function (p1,p2) -> 
+  valide(Equ (p1,p2));;
+
+let ExisteUnContreExempleConsequenceLogique : prop * prop * interpretation list -> bool = function (h,c,EI) match EI with
+    |[] -> false
+    |t::q when modele(h,t) && not(modele(c,t)) -> true 
+    |_::q -> ExisteUnContreExempleConsequenceLogique(h,c,q) ;;
+
+let consequence : prop * prop -> bool = function (h,c) -> 
+  not(ExisteUnContreExempleConsequenceLogique(h,c,(ensInt(union(sp h),(sp c)))));;
+  
+
+let rec tousSP : prop list -> string list = function p match p with
+    |[] -> []
+    |t::q -> union(sp t,tousSP q);;
+
+let rec modeleCommun : prop list * interpretation -> bool = function (p,i) -> match p with
+  |[] -> true 
+  |t::q -> if modele(t,i) then modeleCommun(q,i) else false;;
+
+
+
+let rec existeModeleCommun : prop list * 
+
+;;
+let contradictoire : prop list -> bool = function
+  | lp -> not (existeModeleCommun lp)
+  | 
 
 
   
@@ -243,12 +270,38 @@ let equivalent1 : prop * prop -> bool = function (p1,p2) ->
       
       
       
+    (*     
+      let inteval = [("e1",Zero);("e2",Zero);("e3",Zero);("e4",Zero)];;
+(*** test Q3 ***)
+      prof fbfeval;;
+(*** test Q4 ***)
+      sp fbfeval;;
+(*** test Q5 ***)
+      affiche fbfeval ;;
+(*** test Q6 ***)
+(*affichePri fbfeval ;;*)
+(*** test Q10 ***)
+      valV fbfeval inteval;;
+(*** test Q14 ***)
+      satisfiable fbfeval;;
+(*** test Q15 ***)
+      valide fbfeval ;;
+(*** test Q17 ***)
+      equivalent1 (Symb "b") (And (Top, Symb "a"));;
+      equivalent2 (And (Symb "b",Not (Symb "b"))) (Not (Imp (Symb "a", Symb "a")));;
+(*** test Q18 ***)
+      consequence2 (Not fbfeval) (And (Symb "e1", Not (Symb "e2")));;
+(*** test Q22 ***)
+      consequence [Top ; Bot] Top ;;
+(*** test Q23 ***)
+      consequenceV [fbfeval ; (Not (Or (Symb "e1",Symb "e2")))] (Imp (Symb "e4", Symb "e3"));;
+(*** test Q24 ***)
+      consequenceI [fbfeval ; (Not (Or (Symb "e1",Symb "e2"))) ; (And (Symb "e4",
+                                                                       Not (Symb "e3"))) ] (Equ (Symb "e1", Symb "e3"));;;;
       
       
       
-      
-      
-      
+   *)   
       
       
       
